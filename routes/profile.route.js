@@ -43,29 +43,28 @@ router.get('/profile', async(req, res) => {
     }}
   
   } catch (error) {
-    next(error);
+    next(error);t
+
   }
   });
 
   /* Delete specific things on profile */
 
-  router.delete('/profile/:id', async (req, res, next) => {
+  router.post('/tasks', async(req, res, next) => {
     try {
 
-        const deleteFavArticle = req.body;
-        const deleteFavTouristPlace = req.body;
-        const deleteFavLodgin = req.body;
-        const deleteFavRestaurant = req.body;
+        const {title, description, projectId} = req.body; //tha name (project) matters because it's the same name we need to use on post man 
+        
+        //Create the task
+        const newTask = await TaskModel.create({title, description, project: projectId }) //it's 'project' because in the model (Task) we called it project
+        
+        await Project.findByIdAndUpdate(projectId, {$push: {tasks: newTask._id}});
 
-        await User.findOneAndRemove(deleteFavArticle);
-        await User.findOneAndRemove(deleteFavTouristPlace);
-        await User.findOneAndRemove(deleteFavLodgin);
-        await User.findOneAndRemove(deleteFavRestaurant);
+        //201 means Created
+        res.status(201).json(newTask);
 
-        res.status(200).json({message: `The selected item was deleted successfully`});
-
-    } catch (error){
-        next(error)
+    } catch (error) {
+        next(error);
     }
 })
 

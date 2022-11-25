@@ -24,13 +24,10 @@ const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
 
 const articleRoutes = require("./routes/article.route");
-app.use("/auth", isAuthenticated, articleRoutes);
-
-const profileRoutes = require("./routes/profile.route");
-app.use("/auth", isAuthenticated, profileRoutes);
+app.use("/api", isAuthenticated, articleRoutes);
 
 const continentRoutes = require("./routes/continent.route");
-app.use("/auth", isAuthenticated, continentRoutes);
+app.use("/api", isAuthenticated, continentRoutes);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);

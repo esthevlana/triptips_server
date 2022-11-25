@@ -1,26 +1,32 @@
 const express = require("express");
 const router = express.Router();
-const seeds = require("../bin/seeds.js");
+const Article = require('../models/Article.model');
 
-router.get("/", (req, res, next) => {
-  res.json("All good in here");
+router.get("/", async (req, res, next) => {
+  try {
+    const sixArticles = await Article.find().limit(6)
+    res.status(200).json(sixArticles);
+
+/* como renderizar os artigos do mais recente para o mais antigo? */
+
+} catch (error) {
+    console.log(error);
+    next(error);
+}
 });
 
-router.post('/continents', async (req,res, next) => {
-  seeds();
-});
+
 
 router.get('/search', async (req, res, next) => {
   try {
       const { countryName } = req.query;
       const foundCountry = await Article.find({ countryName: { $regex: new RegExp(countryName, "i") } })
-      console.log(foundCountry)
-      res.render('searchResult', { foundCountry });
+      res.status(200).json(foundCountry);
   } catch (error) {
-      console.log(error)
+      next(error);
   }
 
-})
+});
 
 
 module.exports = router;

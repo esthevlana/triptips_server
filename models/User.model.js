@@ -23,19 +23,16 @@ const userSchema = new Schema(
       default: ''
     },
     favArticles: [{
-      type: Schema.Types.ObjectId, ref: "Articles"
-    }],
-    likedArticles: [{
-      type: Schema.Types.ObjectId, ref: "Articles"
+      type: Schema.Types.ObjectId, ref: "Article"
     }],
     favTouristPlaces: [{
-      type: Schema.Types.ObjectId, ref: "Country"
+      type: Schema.Types.ObjectId, ref: "Review"
     }],
     favLodgin: [{
-      type: Schema.Types.ObjectId, ref: "Country"
+      type: Schema.Types.ObjectId, ref: "Review"
     }],
     favRestaurants: [{
-      type: Schema.Types.ObjectId, ref: "Country"
+      type: Schema.Types.ObjectId, ref: "Review"
     }]
   },
   {

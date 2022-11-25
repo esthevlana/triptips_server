@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const Article = require('../models/Article.model');
 
 // ℹ️ Handles password encryption
 const bcrypt = require("bcrypt");
@@ -108,7 +109,7 @@ router.post("/login", (req, res, next) => {
 
       if (passwordCorrect) {
         // Deconstruct the user object to omit the password
-        const { _id, email, name } = foundUser;
+        const { _id, email, username } = foundUser;
 
         // Create an object that will be set as the token payload
         const payload = { _id, email, username };
@@ -127,5 +128,68 @@ router.post("/login", (req, res, next) => {
     })
     .catch((err) => next(err)); // In this case, we send error handling to the error handling middleware.
 });
+
+/* Get all profile */
+router.get('/profile', async(req, res) => {
+  try {
+    const userId = req.session.currentUser._id;
+    const user = await User.findById(userId)
+    .populate("favArticles")
+    .populate("favTouristPlaces")
+    .populate("favLodgin")
+    .populate("favRestaurants")
+    res.status(200).json(user);
+    console.log(user)
+  } catch (error) {
+  }
+});
+
+
+/* Edit profile */
+router.get('/profile-edit/:id', async (req, res, next) => {
+  try {
+    const updatedUser = await User.findById(req.params.id);
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+router.post('/profile-edit/:id', async (req, res, next) => {
+  try {
+  const {id} = req.params;
+  const { username, imageUser} = req.body
+    
+  if(req.file) {
+    const updatedProfile = await User.findByIdAndUpdate( id, {imageUser: req.file.path}, {new: true})
+    res.status(200).json(updatedProfile);
+   
+   if(!req.file) {
+    const updatedProfile = await User.findByIdAndUpdate( id, {new: true})
+    res.status(200).json(updatedProfile);
+  }}
+
+} catch (error) {
+  next(error);t
+
+}
+});
+
+/* Remove specific things on profile */
+
+/* router.post('/remove-likedarticles', async(req, res, next) => {
+  try {
+
+      const {likedArticles} = req.body;
+      
+      await Article.findByIdAndUpdate(projectId, {$push: {tasks: newTask._id}});
+
+      res.status(201).json(newTask);
+
+  } catch (error) {
+      next(error);
+  }
+}) */
 
 module.exports = router;

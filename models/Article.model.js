@@ -6,31 +6,55 @@ const articleSchema = new Schema(
       type: String,
     },
     countryName: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     description: {
       type: String,
     },
     continentName: {
-        type: Schema.Types.ObjectId, ref: "Continent",
-        required: true
+      type: Schema.Types.ObjectId,
+      ref: "Continent",
+      required: true,
     },
     imgCountry: {
-    type: String,
-    required: true,
+      type: String,
     },
-    allLikes: [{
-        type: Schema.Types.ObjectId, ref: "User"
-    }],
-    allFavs: [{
-        type: Schema.Types.ObjectId, ref: "User"
-    }],
-    touristPlaces: String,
-    lodgin: String,
-    restaurants: String
+    allLikes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    allFavs: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    touristPlaces: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
+    lodgin: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
+    restaurants: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
+    creator: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
-  
 
   {
     timestamps: true,
