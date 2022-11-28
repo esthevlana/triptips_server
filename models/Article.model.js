@@ -13,8 +13,7 @@ const articleSchema = new Schema(
       type: String,
     },
     continentName: {
-      type: Schema.Types.ObjectId,
-      ref: "Continent",
+      type: String,
       required: true,
     },
     imgCountry: {

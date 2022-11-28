@@ -2,29 +2,27 @@ const router = require("express").Router();
 const Article = require("../models/Article.model");
 const User = require("../models/User.model");
 const Review = require("../models/Review.model");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 /* Create new article */
 router.post("/articlescreate", async (req, res, next) => {
   try {
-    const userId = req.payload._id;
     const {
       title,
       countryName,
       description,
       continentName,
-      touristcPlaces,
-      lodgin,
-      restaurants,
+      imageUrl,
+      creator,
     } = req.body;
+
     const newArticle = await Article.create({
       title,
       countryName,
       description,
       continentName,
-      touristcPlaces,
-      lodgin,
-      restaurants,
-      creator: userId,
+      creator,
+      imgCountry: imageUrl,
     });
 
     res.status(200).json(newArticle);
@@ -78,7 +76,7 @@ router.get("articles/:id", async (req, res, next) => {
 });
 
 /* Edit article */
-router.put("/articles/:id", async (req, res, next) => {
+router.put("/articles/edit/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     const {

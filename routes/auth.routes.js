@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const Article = require('../models/Article.model');
+const fileUploader = require("../config/cloudinary.config");
+const Article = require("../models/Article.model");
 
 // ℹ️ Handles password encryption
 const bcrypt = require("bcrypt");
@@ -130,25 +131,24 @@ router.post("/login", (req, res, next) => {
 });
 
 /* Get all profile */
-router.get('/profile', async(req, res) => {
+router.get("/profile", isAuthenticated, async (req, res) => {
   try {
-    const userId = req.session.currentUser._id;
+    const userId = req.payload;
     const user = await User.findById(userId)
-    .populate("favArticles")
-    .populate("favTouristPlaces")
-    .populate("favLodgin")
-    .populate("favRestaurants")
+      .populate("favArticles")
+      .populate("favTouristPlaces")
+      .populate("favLodgin")
+      .populate("favRestaurants");
     res.status(200).json(user);
-    console.log(user)
-  } catch (error) {
-  }
+    console.log(user);
+  } catch (error) {}
 });
 
-
 /* Edit profile */
-router.get('/profile-edit/:id', async (req, res, next) => {
+router.get("/profile-edit/:id", async (req, res, next) => {
   try {
-    const updatedUser = await User.findById(req.params.id);
+    const { id } = req.params;
+    const updatedUser = await User.findById(id);
     res.status(200).json(updatedUser);
   } catch (error) {
     console.log(error);
@@ -156,40 +156,29 @@ router.get('/profile-edit/:id', async (req, res, next) => {
   }
 });
 
-router.post('/profile-edit/:id', async (req, res, next) => {
+router.put("/profile-edit/:id", isAuthenticated, async (req, res, next) => {
   try {
-  const {id} = req.params;
-  const { username, imageUser} = req.body
-    
-  if(req.file) {
-    const updatedProfile = await User.findByIdAndUpdate( id, {imageUser: req.file.path}, {new: true})
-    res.status(200).json(updatedProfile);
-   
-   if(!req.file) {
-    const updatedProfile = await User.findByIdAndUpdate( id, {new: true})
-    res.status(200).json(updatedProfile);
-  }}
-
-} catch (error) {
-  next(error);t
-
-}
+    const { id } = req.params;
+    const { username, imgUser } = req.body;
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { imgUser, username },
+      { new: true }
+    );
+    res.json(updatedUser);
+  } catch (error) {
+    next(error);
+  }
 });
 
-/* Remove specific things on profile */
-
-/* router.post('/remove-likedarticles', async(req, res, next) => {
-  try {
-
-      const {likedArticles} = req.body;
-      
-      await Article.findByIdAndUpdate(projectId, {$push: {tasks: newTask._id}});
-
-      res.status(201).json(newTask);
-
-  } catch (error) {
-      next(error);
-  }
-}) */
+router.delete("/profile/:id", async (req, res, next) => {
+  const userId = req.params.id;
+  const user = await User.deleteOne(userId)
+    .populate("favArticles")
+    .populate("favTouristPlaces")
+    .populate("favLodgin")
+    .populate("favRestaurants");
+  res.json("profile/profile", user);
+});
 
 module.exports = router;
