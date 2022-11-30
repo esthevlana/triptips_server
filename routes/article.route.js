@@ -65,7 +65,7 @@ router.post("/reviewcreate/:articleId", async (req, res, next) => {
 });
 
 /* Get a single article */
-router.get("articles/:id", async (req, res, next) => {
+router.get("/articles/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     const singleArticle = await Article.findById(id);

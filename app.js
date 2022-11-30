@@ -18,19 +18,19 @@ const { isAuthenticated } = require("./middleware/jwt.middleware");
 
 // 👇 Start handling routes here
 const indexRoutes = require("./routes/index.routes");
-app.use("/api", indexRoutes);
+app.use("/", indexRoutes);
 
 const authRoutes = require("./routes/auth.routes");
-app.use("/api", authRoutes);
+app.use("/", authRoutes);
 
 const articleRoutes = require("./routes/article.route");
-app.use("/api", articleRoutes);
+app.use("/", articleRoutes);
 
 const continentRoutes = require("./routes/continent.route");
-app.use("/api", continentRoutes);
+app.use("/", continentRoutes);
 
 const uploadFileRoutes = require("./routes/uploadFile.route");
-app.use("/api", uploadFileRoutes);
+app.use("/", uploadFileRoutes);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);

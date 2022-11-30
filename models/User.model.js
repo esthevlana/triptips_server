@@ -20,7 +20,7 @@ const userSchema = new Schema(
     },
     imgUser: {
       type: String,
-      default: ''
+      default: 'https://res.cloudinary.com/dymq1r3y9/image/upload/v1669724308/movie-gallery/150fa8800b0a0d5633abc1d1c4db3d87-removebg-preview_xculzv.png'
     },
     favArticles: [{
       type: Schema.Types.ObjectId, ref: "Article"

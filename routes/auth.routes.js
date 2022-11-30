@@ -164,8 +164,17 @@ router.put("/profile-edit/:id", isAuthenticated, async (req, res, next) => {
       id,
       { imgUser, username },
       { new: true }
-    );
-    res.json(updatedUser);
+    )
+
+    const { _id, email } = updatedUser;
+    const payload = { _id, email, username };
+
+    const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+      algorithm: "HS256",
+      expiresIn: "14d",
+    });
+
+    res.json({authToken});
   } catch (error) {
     next(error);
   }
