@@ -68,8 +68,9 @@ router.post("/reviewcreate/:articleId", async (req, res, next) => {
 router.get("/articles/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
-    const singleArticle = await Article.findById(id)
-    .populate("lodgin restaurants touristPlaces")
+    const singleArticle = await Article.findById(id).populate(
+      "lodgin restaurants touristPlaces creator"
+    );
     res.status(200).json(singleArticle);
   } catch (error) {
     next(error);
@@ -125,7 +126,7 @@ router.delete("/article/:id", async (req, res, next) => {
   }
 });
 
-router.get("/liked-article/:id", async (req, res, next) => {
+router.get("/liked-article/:id", isAuthenticated, async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.payload._id;
@@ -144,52 +145,65 @@ router.get("/liked-article/:id", async (req, res, next) => {
   }
 });
 
-router.get("/favourite-article/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const userId = req.payload._id;
+router.get(
+  "/favourite-article/:id",
+  isAuthenticated,
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const userId = req.payload._id;
 
-    const thisArticle = await Article.findById(id);
+      const thisArticle = await Article.findById(id);
 
-    if (thisArticle.allFavs.includes(userId)) {
-      await Article.findByIdAndUpdate(id, { $pull: { allFavs: userId } });
-      res.status(200).json({ message: `Article Disfavourite` });
-    } else {
-      await Article.findByIdAndUpdate(id, { $push: { allFavs: userId } });
-      res.status(200).json({ message: `Article Favourited` });
+      if (thisArticle.allFavs.includes(userId)) {
+        await Article.findByIdAndUpdate(id, { $pull: { allFavs: userId } });
+        await User.findByIdAndUpdate(userId, { $pull: { favArticles: id } });
+        res.status(200).json({ message: `Article Disfavourite` });
+      } else {
+        await Article.findByIdAndUpdate(id, { $push: { allFavs: userId } });
+        await User.findByIdAndUpdate(userId, { $push: { favArticles: id } });
+        res.status(200).json({ message: `Article Favourited` });
+      }
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-    console.log(error);
   }
-});
+);
 
-router.get("/fav-touristplaces/:id", async (req, res, next) => {
+router.get("/ /:id",
+  isAuthenticated,
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const userId = req.payload._id;
+
+      const thisUser = await User.findById(userId);
+
+      if (thisUser.favTouristPlaces.includes(id)) {
+        await User.findByIdAndUpdate(userId, {
+          $pull: { favTouristPlaces: id },
+        });
+        res.status(200).json({ message: `Tourist Place Disfavourite` });
+      } else {
+        await User.findByIdAndUpdate(userId, {
+          $push: { favTouristPlaces: id },
+        });
+        res.status(200).json({ message: `Tourist Place Favourited` });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+router.get("/fav-lodgin/:id", isAuthenticated, async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.payload._id;
 
     const thisUser = await User.findById(userId);
 
-    if (thisUser.favTouristPlaces.includes(userId)) {
-      await User.findByIdAndUpdate(userId, { $pull: { favTouristPlaces: id } });
-      res.status(200).json({ message: `Tourist Place Disfavourite` });
-    } else {
-      await User.findByIdAndUpdate(userId, { $push: { favTouristPlaces: id } });
-      res.status(200).json({ message: `Tourist Place Favourited` });
-    }
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-router.get("/fav-lodgin/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const userId = req.payload._id;
-
-    const thisUser = await User.findById(userId);
-
-    if (thisUser.favLodgin.includes(userId)) {
+    if (thisUser.favLodgin.includes(id)) {
       await User.findByIdAndUpdate(userId, { $pull: { favLodgin: id } });
       res.status(200).json({ message: `Lodgin Disfavourite` });
     } else {
@@ -201,14 +215,14 @@ router.get("/fav-lodgin/:id", async (req, res, next) => {
   }
 });
 
-router.get("/fav-restaurant/:id", async (req, res, next) => {
+router.get("/fav-restaurant/:id", isAuthenticated, async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.payload._id;
 
     const thisUser = await User.findById(userId);
 
-    if (thisUser.favRestaurants.includes(userId)) {
+    if (thisUser.favRestaurants.includes(id)) {
       await User.findByIdAndUpdate(userId, { $pull: { favRestaurants: id } });
       res.status(200).json({ message: `Restaurant Disfavourite` });
     } else {
