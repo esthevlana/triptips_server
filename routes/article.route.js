@@ -170,7 +170,8 @@ router.get(
   }
 );
 
-router.get("/ /:id",
+router.get(
+  "/fav-touristplaces/:id",
   isAuthenticated,
   async (req, res, next) => {
     try {
