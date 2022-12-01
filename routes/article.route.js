@@ -68,7 +68,8 @@ router.post("/reviewcreate/:articleId", async (req, res, next) => {
 router.get("/articles/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
-    const singleArticle = await Article.findById(id);
+    const singleArticle = await Article.findById(id)
+    .populate("lodgin restaurants touristPlaces")
     res.status(200).json(singleArticle);
   } catch (error) {
     next(error);
